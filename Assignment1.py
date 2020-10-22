@@ -1,4 +1,8 @@
 from collections import deque
+import random
+import math
+import time
+from copy import deepcopy
 # ----------------------------- DFS -----------------------------
 
 def printResult(result):
@@ -47,11 +51,113 @@ def findResultBFS(size):
                 continue
             next_pos = board_state + (col,)
             queue.append(next_pos)
-# ----------------------------- Main -----------------------------
 
-isCompleted = False
+# ----------------- Heuristic - Simulated Annealing --------------
+
+def initState(n):
+    lst = list(range(n))
+    random.shuffle(lst)
+    return lst
+
+def nextState(state, N):
+    lst = deepcopy(state)
+    while True:
+        idx1 = random.randrange(0, N - 1)
+        idx2 = random.randrange(0, N - 1)
+        if idx1 != idx2:
+            break
+    lst[idx1], lst[idx2] = lst[idx2], lst[idx1]
+    return lst
+
+def constFunc(state):
+    heuristic_result = 0
+    for i in range(N):
+        for j in range(i + 1, N):
+            if abs(state[i] - state[j]) in [abs(i - j), 0]:
+                heuristic_result += 1
+
+    return heuristic_result
+
+def simulatedAnnealing(N):
+    global isCompleted
+    temperature = 4000*N
+    
+    alpha = 0.99
+    current_state = initState(N)
+    current_cost = constFunc(current_state)
+
+    while temperature > 0:
+        temperature *= alpha
+        next_state = nextState(current_state, N)
+        next_cost = constFunc(next_state)
+        delta_E = next_cost - current_cost
+
+        if delta_E < 0 or random.uniform(0, 1) < math.exp(-delta_E / temperature):
+            current_state = next_state
+            current_cost = constFunc(current_state)
+
+        if current_cost == 0:
+            isCompleted = True
+            printBoard(current_state)
+            break
+
+    if isCompleted is False:
+        print("Failed")
+
+def printBoard(lst):
+    print("Heuristic:")
+    print(lst)
+
+# ---------------------- >> Queens ---------------
+lst = []
+def nQueenHundredTh(N):
+    r = N%12
+    for i in range(2, N+1, 2):
+        lst.append(i)
+
+    if r == 3 or r == 9:
+        lst.remove(2)
+        lst.append(2)
+
+    _count = len(lst)
+
+    for i in range(1, N+1,2):
+            lst.append(i)
+
+    if r == 8:
+        for i in range(_count, len(lst), 2):
+           
+            lst[i], lst[i+1] = lst[i+1], lst[i]
+    
+    elif r == 2:
+        lst[_count], lst[_count + 1] = lst[_count + 1], lst[_count]
+        lst.remove(5)
+        lst.append(5)
+    
+    elif r == 3 or r == 9:
+        lst.remove(1)
+        lst.remove(3)
+        lst.append(1)
+        lst.append(3)
+        
+# ------------------------ Main ----------------------
+
+start = time.time()
 print("Nhập N")
 N = int(input())
-result = [-1]*N
-findResultDFS(0)
-findResultBFS(N)
+isCompleted = False
+
+if N < 10:
+    result = [-1]*N
+    findResultDFS(0)
+    findResultBFS(N)
+    simulatedAnnealing(N)
+
+elif N > 9 and N < 100:
+    simulatedAnnealing(N)
+    
+else:
+    nQueenHundredTh(N)
+    print(lst)
+
+print("Runtime in second:", time.time() - start)
