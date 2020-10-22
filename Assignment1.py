@@ -59,14 +59,10 @@ def initState(n):
     random.shuffle(lst)
     return lst
 
-def nextState(state, N):
+def nextState(state):
     lst = deepcopy(state)
-    while True:
-        idx1 = random.randrange(0, N - 1)
-        idx2 = random.randrange(0, N - 1)
-        if idx1 != idx2:
-            break
-    lst[idx1], lst[idx2] = lst[idx2], lst[idx1]
+    i, j = random.sample(range(len(lst)), 2)
+    lst[i], lst[j] = lst[j], lst[i]
     return lst
 
 def constFunc(state):
@@ -88,7 +84,7 @@ def simulatedAnnealing(N):
 
     while temperature > 0:
         temperature *= alpha
-        next_state = nextState(current_state, N)
+        next_state = nextState(current_state)
         next_cost = constFunc(next_state)
         delta_E = next_cost - current_cost
 
