@@ -154,6 +154,7 @@ elif N > 9 and N < 100:
     
 else:
     nQueenHundredTh(N)
+    lst = [i - 1 for i in lst]
     print(lst)
 
 print("Runtime in second:", time.time() - start)
