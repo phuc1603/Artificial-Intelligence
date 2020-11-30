@@ -26,30 +26,38 @@ def constFunc(staffs, orders, warehousePos):
     return heuristic_result
 
 def simulatedAnnealing(orders, nStaffs, warehousePos):
+    global startTime
     temperature = 4000*len(orders)
     alpha = 0.99
     current_state = initState(orders, nStaffs)
     current_cost = constFunc(current_state, orders, warehousePos)
-    n = 1000000
     temp1 = 99999999999
     temp2 = {}
 
-    while n > 0:
+    while time.time() - startTime < 60:
         temperature *= alpha
         next_state = initState(orders, nStaffs)
         next_cost = constFunc(next_state, orders, warehousePos)
         delta_E = next_cost - current_cost
 
-        if delta_E < 0 or random.uniform(0, 1) < math.exp(-delta_E / temperature):
+        if delta_E < 0 or random.uniform(0, 10) < math.exp(-delta_E / temperature):
             current_state = next_state
             current_cost = constFunc(current_state, orders, warehousePos)
 
         if current_cost < temp1:
             temp1 = current_cost
             temp2 = current_state
-        n -= 1
+
+    lines = ''
     for i in temp2:
-        print(temp2[i])
+        line = ''
+        for key in temp2[i]:
+            line += str(key) + ' '
+        lines += line.strip() + '\n'
+        
+    with open('output.txt', 'w') as file:
+        file.write(lines)
+        
 
 def assign(file_input, file_output):
     warehousePos = []
@@ -69,8 +77,9 @@ def assign(file_input, file_output):
             idx += 1
     # ================================================
     simulatedAnnealing(orders, nStaffs, warehousePos)
-
     return
 
 
+
+startTime = time.time()
 assign('input.txt', 'output.txt')
