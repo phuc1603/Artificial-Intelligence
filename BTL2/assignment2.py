@@ -80,7 +80,7 @@ def assign(file_input, file_output):
     staffs = {}
     with open(file_input, 'r') as file:
         warehousePos = file.readline().split(' ')
-        nStaffs, nOrders = file.readline().split(' ')
+        nOrders, nStaffs = file.readline().split(' ')
         idx = 0
         line = file.readline()
         while line:
