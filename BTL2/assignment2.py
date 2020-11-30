@@ -48,15 +48,15 @@ def simulatedAnnealing(orders, nStaffs, warehousePos):
             temp1 = current_cost
             temp2 = current_state
 
-    lines = ''
+    result = ''
     for i in temp2:
         line = ''
         for key in temp2[i]:
             line += str(key) + ' '
-        lines += line.strip() + '\n'
+        result += line.strip() + '\n'
         
     with open('output.txt', 'w') as file:
-        file.write(lines)
+        file.write(result)
         
 
 def assign(file_input, file_output):
@@ -78,8 +78,6 @@ def assign(file_input, file_output):
     # ================================================
     simulatedAnnealing(orders, nStaffs, warehousePos)
     return
-
-
 
 startTime = time.time()
 assign('input.txt', 'output.txt')
